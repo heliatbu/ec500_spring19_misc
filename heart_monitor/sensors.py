@@ -1,5 +1,5 @@
 import time
-import sensor
+import sensor_readers
 import datetime
 from threading import Thread
 from common_types import BloodOxygenData, BloodPressureData, BloodPulseData
@@ -48,7 +48,7 @@ class BloodOxygenSensorReader(SensorReader):
         while True:
             if (cur_time - old_time) >= self._sample_freq:
                 old_time = cur_time
-                oxy_raw = sensor.BloodOxygenSensor.get_blood_oxygen_data()
+                oxy_raw = sensor_readers.BloodOxygenSensor.get_blood_oxygen_data()
                 oxy_data = BloodOxygenData(
                     oxy_raw,
                     datetime.datetime.now()
@@ -70,7 +70,7 @@ class BloodPressureSensorReader(SensorReader):
         while True:
             if (cur_time - old_time) >= self._sample_freq:
                 old_time = cur_time
-                raw_data = sensor.BloodPressureSensor.get_blood_pressure_data()
+                raw_data = sensor_readers.BloodPressureSensor.get_blood_pressure_data()
                 pressure_data = BloodPressureData(
                     raw_data[0],
                     raw_data[1],
@@ -92,7 +92,7 @@ class BloodPulseSensorReader(SensorReader):
         while True:
             if (cur_time - old_time) >= self._sample_freq:
                 old_time = cur_time
-                pulse_data_raw = sensor.BloodPulseSensor.get_blood_pulse_data()
+                pulse_data_raw = sensor_readers.BloodPulseSensor.get_blood_pulse_data()
                 pulse_data = BloodPulseData(
                     pulse_data_raw,
                     datetime.datetime.now()
