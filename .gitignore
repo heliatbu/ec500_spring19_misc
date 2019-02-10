@@ -3,3 +3,6 @@
 
 # Python virtual enviornment
 */venv/*
+
+# Python compiled code
+*.pyc
