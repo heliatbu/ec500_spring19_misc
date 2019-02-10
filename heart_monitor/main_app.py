@@ -1,4 +1,4 @@
-import sensors
+import sensor_readers
 import display
 import prediction_engine
 import notification_manager
@@ -23,9 +23,9 @@ def main(cmd_args):
         notifications_sender.MockTelegramSender(),
         notifications_sender.MockEmailSender()
     )
-    pulse_reader = sensors.BloodPulseSensorReader(1, data_proc_queue, tty)
-    oxy_reader = sensors.BloodOxygenSensorReader(4, data_proc_queue, tty)
-    pressure_reader = sensors.BloodPressureSensorReader(2, data_proc_queue, tty)
+    pulse_reader = sensor_readers.BloodPulseSensorReader(1, data_proc_queue, tty)
+    oxy_reader = sensor_readers.BloodOxygenSensorReader(4, data_proc_queue, tty)
+    pressure_reader = sensor_readers.BloodPressureSensorReader(2, data_proc_queue, tty)
     real_time_proc = realtime_data_processor.RealTimeDataProcessor(data_proc_queue, notification_man)
     pulse_reader.start()
     oxy_reader.start()
