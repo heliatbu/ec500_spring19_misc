@@ -1,11 +1,12 @@
-import sensor_readers
 import display
+import sensor_readers
 import prediction_engine
 import notification_manager
 import notifications_sender
 import realtime_data_processor
 from multiprocessing import Queue
 from common_types import Contact
+from database import InMemorySimpleDatabase
 
 
 def main(cmd_args):
@@ -23,14 +24,17 @@ def main(cmd_args):
         notifications_sender.MockTelegramSender(),
         notifications_sender.MockEmailSender()
     )
-    pulse_reader = sensor_readers.BloodPulseSensorReader(1, data_proc_queue, tty)
-    oxy_reader = sensor_readers.BloodOxygenSensorReader(4, data_proc_queue, tty)
-    pressure_reader = sensor_readers.BloodPressureSensorReader(2, data_proc_queue, tty)
+    database = InMemorySimpleDatabase()
+    ai_engine = prediction_engine.PredictionEngine(10, notification_man, database)
+    pulse_reader = sensor_readers.BloodPulseSensorReader(1, data_proc_queue, tty, database)
+    oxy_reader = sensor_readers.BloodOxygenSensorReader(4, data_proc_queue, tty, database)
+    pressure_reader = sensor_readers.BloodPressureSensorReader(2, data_proc_queue, tty, database)
     real_time_proc = realtime_data_processor.RealTimeDataProcessor(data_proc_queue, notification_man)
     pulse_reader.start()
     oxy_reader.start()
     pressure_reader.start()
     real_time_proc.start()
+    ai_engine.start()
     oxy_reader.join()
     pressure_reader.join()
     pulse_reader.join()

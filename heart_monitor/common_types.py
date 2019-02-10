@@ -40,6 +40,9 @@ class RawData(object):
     def get_type(self):
         return self._data_type
 
+    def get_timestamp(self):
+        return self._timestamp
+
 
 class BloodPulseData(RawData):
     def __init__(self, pulse, timestamp):

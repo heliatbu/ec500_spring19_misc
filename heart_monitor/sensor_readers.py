@@ -29,11 +29,12 @@ class SensorReader(Thread):
     :raises keyError: raises an exception
     '''
 
-    def __init__(self, sample_frequency, proc_queue, display_handler):
+    def __init__(self, sample_frequency, proc_queue, display_handler, database):
         super().__init__()
         self._sample_freq = sample_frequency
         self._data_proc_queue = proc_queue
         self._display = display_handler
+        self._database = database
 
 
 class BloodOxygenSensorReader(SensorReader):
@@ -49,11 +50,16 @@ class BloodOxygenSensorReader(SensorReader):
             if (cur_time - old_time) >= self._sample_freq:
                 old_time = cur_time
                 oxy_raw = sensors.BloodOxygenSensor.get_blood_oxygen_data()
+                timestamp = datetime.datetime.now()
                 oxy_data = BloodOxygenData(
                     oxy_raw,
-                    datetime.datetime.now()
+                    timestamp
                 )
                 self._data_proc_queue.put(oxy_data, block=False)
+                self._database.insert_oxygen_data(
+                    oxy_raw,
+                    timestamp
+                )
                 # we would decode and encode here
                 self._display.display_blood_oxygen(oxy_raw)
             cur_time = time.time()
@@ -71,12 +77,18 @@ class BloodPressureSensorReader(SensorReader):
             if (cur_time - old_time) >= self._sample_freq:
                 old_time = cur_time
                 raw_data = sensors.BloodPressureSensor.get_blood_pressure_data()
+                timestamp = datetime.datetime.now()
                 pressure_data = BloodPressureData(
                     raw_data[0],
                     raw_data[1],
-                    datetime.datetime.now()
+                    timestamp
                 )
                 self._data_proc_queue.put(pressure_data, block=False)
+                self._database.insert_heart_rate_data(
+                    raw_data[0],
+                    raw_data[1],
+                    timestamp
+                )
                 self._display.display_blood_pressure(raw_data[0], raw_data[1])
             cur_time = time.time()
 
@@ -93,10 +105,15 @@ class BloodPulseSensorReader(SensorReader):
             if (cur_time - old_time) >= self._sample_freq:
                 old_time = cur_time
                 pulse_data_raw = sensors.BloodPulseSensor.get_blood_pulse_data()
+                timestamp = datetime.datetime.now()
                 pulse_data = BloodPulseData(
                     pulse_data_raw,
-                    datetime.datetime.now()
+                    timestamp
                 )
                 self._data_proc_queue.put(pulse_data, block=False)
+                self._database.insert_pulse_data(
+                    pulse_data_raw,
+                    timestamp)
+
                 self._display.display_blood_pulse(pulse_data_raw)
             cur_time = time.time()
