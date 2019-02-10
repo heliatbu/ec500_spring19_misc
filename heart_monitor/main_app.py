@@ -6,6 +6,7 @@ import notifications_sender
 import realtime_data_processor
 from multiprocessing import Queue
 from common_types import Contact
+import settings
 
 
 def main(cmd_args):
@@ -15,6 +16,12 @@ def main(cmd_args):
     :param cmd_args: dictionary of expected command line arguments
     :return: 0 on success and non-zero on error
     '''
+    settings.init()
+    settings.sender_email = input("Type sender email and press enter:")
+    settings.receiver_email = input("Type reciever email and press enter:")
+    settings.password = input("Type sender password for email and press enter:")
+    settings.phone = input("Type reciever phone number:")
+    
     data_proc_queue = Queue()
     tty = display.TextTerminalDisplay()
     notification_man = notification_manager.FlexibleNotificationManager(

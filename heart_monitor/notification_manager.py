@@ -1,5 +1,5 @@
 from common_types import MessageUrgency
-
+import settings
 
 class NotificationManager(object):
     """
@@ -33,3 +33,6 @@ class FlexibleNotificationManager(NotificationManager):
             self._telegram_sender.send_notification(msg, self._main_contact)
         elif msg.get_urgency() == MessageUrgency.LOW_URGENCY:
             self._email_sender.send_notification(msg, self._main_contact)
+
+
+

@@ -1,3 +1,6 @@
+import smtplib, ssl
+import settings
+from twilio.rest import Client
 
 
 class NotificationSender(object):
@@ -44,10 +47,12 @@ class MockEmailSender(NotificationSender):
         pass
 
     def send_notification(self, message, recipient):
+
         print(
             'email> TO: {}\n\t\t{}'.format(
                 recipient.get_name(), message.get_msg_content())
         )
+    
 
 
 class MockTelegramSender(NotificationSender):
@@ -57,6 +62,8 @@ class MockTelegramSender(NotificationSender):
     :raises keyError: raises an exception
     '''
 
+
+
     def get_telegram_id(self):
         pass
 
@@ -65,3 +72,33 @@ class MockTelegramSender(NotificationSender):
             'telegram>> BOT > TO: {}\n\t\t{}'.format(
                 recipient.get_name(), message.get_msg_content())
         )
+
+        port = 587  # For starttls
+        smtp_server = "smtp.gmail.com"
+        message = """\
+        Subject: Hi there
+
+        This message is sent from alert."""
+
+        context = ssl.create_default_context()
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.ehlo()  # Can be omitted
+            server.starttls(context=context)
+            server.ehlo()  # Can be omitted
+            server.login(settings.sender_email, settings.password)
+            server.sendmail(settings.sender_email, settings.receiver_email, settings.message)
+
+        account_sid = ''
+        auth_token = ''
+        client = Client(account_sid, auth_token)
+
+        message = client.messages \
+                .create(
+                     body="Alert Message from the patient",
+                     from_='+16176069471',
+                     to= '+1'+settings.phone
+                 )
+
+        print(message.sid)
+    
+
