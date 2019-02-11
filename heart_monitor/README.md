@@ -6,3 +6,7 @@
 
 ## Run instructions
 ```python main_app.py```
+
+## Module
+
+Based on Miguel's prediction module. Write the prediction module of my version.
